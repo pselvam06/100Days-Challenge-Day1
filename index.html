@@ -44,6 +44,65 @@
 
     /* Accessibility focus */
     .btn:focus,.dot:focus{outline:2px solid #fff;outline-offset:3px}
+
+    /* Mobile portrait optimizations */
+@media (max-width: 600px) {
+  :root {
+    --w: 100%;   /* Take full width */
+    --h: auto;   /* Let height adapt */
+  }
+
+  header h1 {
+    font-size: 1.6rem;
+  }
+
+  header h2 {
+    font-size: 0.9rem;
+  }
+
+  .slider {
+    width: 100%;
+    aspect-ratio: 4/3; /* taller ratio for portrait view */
+    border-radius: 8px;
+  }
+
+  .btn {
+    padding: 8px 10px;
+    font-size: 16px;
+    border-radius: 6px;
+  }
+
+  .dot {
+    width: 10px;
+    height: 10px;
+  }
+
+  .counter {
+    font-size: 12px;
+    padding: 4px 8px;
+  }
+}
+
+/* For very small screens */
+@media (max-width: 400px) {
+  header h1 {
+    font-size: 1.3rem;
+  }
+
+  header h2 {
+    font-size: 0.8rem;
+  }
+
+  .slider {
+    aspect-ratio: 1/1; /* square for tiny screens */
+  }
+
+  .btn {
+    padding: 6px 8px;
+    font-size: 14px;
+  }
+}
+
   </style>
 </head>
 <body>

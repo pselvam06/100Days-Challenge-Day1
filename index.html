@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Natural Gallery Slider</title>
+  <style>
+    :root{--w:900px;--h:500px}
+    
+    body{
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:flex-start;
+      min-height:100vh;
+      margin:0;
+      background:linear-gradient(135deg,#2c3e50,#0b0c0c,#2c1434);
+      color:#fff;
+      padding:20px;
+    }
+    header{text-align:center;margin-bottom:20px}
+    header h1{font-size:2.5rem;margin:0}
+    header h2{font-size:1.2rem;font-weight:400;margin:8px 0 0;opacity:.85}
+
+    .slider{width:clamp(320px,var(--w),100%);max-width:var(--w);aspect-ratio:16/9;position:relative;overflow:hidden;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.6)}
+    .slides{display:flex;height:100%;transition:transform .45s ease;will-change:transform}
+    .slide{flex:0 0 100%;height:100%;display:grid;place-items:center;background:#222}
+    .slide img{width:100%;height:100%;object-fit:cover;display:block}
+
+    /* Controls */
+    .btn{position:absolute;top:50%;transform:translateY(-50%);z-index:5;background:rgba(0,0,0,.45);border:none;color:#fff;padding:10px 14px;font-size:18px;border-radius:8px;cursor:pointer;}
+    .btn:active{transform:translateY(-50%) scale(.98)}
+    .prev{left:12px}
+    .next{right:12px}
+
+    /* Dots */
+    .dots{position:absolute;left:50%;transform:translateX(-50%);bottom:12px;display:flex;gap:10px;z-index:6}
+    .dot{width:14px;height:14px;border-radius:50%;background:rgba(255,255,255,.4);cursor:pointer;transition:all .3s ease;border:2px solid transparent}
+    .dot.active{background:#fff;border-color:#4ca1af;box-shadow:0 0 6px #4ca1af}
+
+    /* Image counter */
+    .counter{position:absolute;left:12px;top:12px;padding:6px 10px;background:rgba(0,0,0,.45);color:#fff;border-radius:8px;font-size:13px}
+
+    /* Accessibility focus */
+    .btn:focus,.dot:focus{outline:2px solid #fff;outline-offset:3px}
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Natural Gallery</h1>
+    <h2>Explore the beauty of nature through curated images</h2>
+  </header>
+
+  <div class="slider">
+    <div class="counter" id="counter" aria-hidden="true">1 / 6</div>
+    <button class="btn prev" id="prevBtn" aria-label="Previous image">❮</button>
+    <div class="slides" id="slides">
+      <div class="slide"><img src="https://images.pexels.com/photos/5633983/pexels-photo-5633983.jpeg" alt="Landscape 1"></div>
+      <div class="slide"><img src="https://images.pexels.com/photos/8051671/pexels-photo-8051671.jpeg" alt="Landscape 2"></div>
+      <div class="slide"><img src="https://images.pexels.com/photos/17022126/pexels-photo-17022126.jpeg" alt="Landscape 3"></div>
+      <div class="slide"><img src="https://images.pexels.com/photos/32060047/pexels-photo-32060047.jpeg" alt="Landscape 4"></div>
+      <div class="slide"><img src="https://images.pexels.com/photos/31792468/pexels-photo-31792468.jpeg" alt="Landscape 5"></div>
+      <div class="slide"><img src="https://images.pexels.com/photos/15586829/pexels-photo-15586829.jpeg" alt="Landscape 6"></div>
+    </div>
+    <button class="btn next" id="nextBtn" aria-label="Next image">❯</button>
+
+    <div class="dots" id="dots" aria-hidden="false"></div>
+  </div>
+
+  <script>
+    (function(){
+      const slidesEl = document.getElementById('slides');
+      const prevBtn = document.getElementById('prevBtn');
+      const nextBtn = document.getElementById('nextBtn');
+      const dotsEl = document.getElementById('dots');
+      const counterEl = document.getElementById('counter');
+
+      const total = slidesEl.children.length;
+      let index = 0; // 0-based
+
+      // create dots
+      for(let i=0;i<total;i++){
+        const d = document.createElement('button');
+        d.className='dot';
+        d.setAttribute('aria-label', `Go to slide ${i+1}`);
+        d.addEventListener('click', ()=>{goTo(i)});
+        dotsEl.appendChild(d);
+      }
+
+      const dots = Array.from(dotsEl.children);
+
+      function update(){
+        slidesEl.style.transform = `translateX(${-index * 100}%)`;
+        dots.forEach((d,i)=> d.classList.toggle('active', i===index));
+        counterEl.textContent = `${index+1} / ${total}`;
+      }
+
+      function prev(){ index = (index - 1 + total) % total; update(); }
+      function next(){ index = (index + 1) % total; update(); }
+      function goTo(i){ index = ((i % total) + total) % total; update(); }
+
+      prevBtn.addEventListener('click', prev);
+      nextBtn.addEventListener('click', next);
+
+      // keyboard
+      window.addEventListener('keydown', (e)=>{
+        if(e.key === 'ArrowLeft') prev();
+        if(e.key === 'ArrowRight') next();
+      });
+
+      // optional: touch / swipe (basic)
+      let startX = null;
+      slidesEl.addEventListener('touchstart', (e)=>{ startX = e.touches[0].clientX; });
+      slidesEl.addEventListener('touchend', (e)=>{
+        if(startX === null) return;
+        const endX = e.changedTouches[0].clientX;
+        const diff = endX - startX;
+        if(Math.abs(diff) > 40) diff > 0 ? prev() : next();
+        startX = null;
+      });
+
+      // init
+      update();
+    })();
+  </script>
+</body>
+</html>
